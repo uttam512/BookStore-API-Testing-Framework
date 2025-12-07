@@ -4,7 +4,7 @@ A complete Postman-based API Testing Framework designed to test CRUD operations 
 
 This project demonstrates professional API testing practices including:
 
-- Environment variables  
+- Environment  variables  
 - Chained requests using `bookId`  
 - Automated JavaScript tests  
 - JSON Schema validation  
