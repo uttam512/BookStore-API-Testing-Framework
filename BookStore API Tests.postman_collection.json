@@ -1,0 +1,333 @@
+{
+	"info": {
+		"_postman_id": "fa3fe7ab-d96e-4e2a-8d29-873cdb166f37",
+		"name": "BookStore API Tests",
+		"description": "API test suite for Fake REST BookStore (CRUD tests for Books).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47180593",
+		"_collection_link": "https://uttam-tyagi-2619768.postman.co/workspace/BookStore-API-Testing~e0f61fa8-5919-4e63-9c04-72ea8a6e49e0/collection/47180593-fa3fe7ab-d96e-4e2a-8d29-873cdb166f37?action=share&source=collection_link&creator=47180593"
+	},
+	"item": [
+		{
+			"name": "GET – All Books",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// 1️⃣ Status code should be 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// 2️⃣ Response should be JSON\r",
+							"pm.test(\"Response has valid JSON\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"    pm.response.to.be.withBody;\r",
+							"});\r",
+							"\r",
+							"// 3️⃣ Response should be an array of books\r",
+							"pm.test(\"Response is an array of books\", function () {\r",
+							"    const data = pm.response.json();\r",
+							"    pm.expect(data).to.be.an(\"array\");\r",
+							"    pm.expect(data.length).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"// 4️⃣ Each book should have basic fields\r",
+							"pm.test(\"Each book has id, title, description\", function () {\r",
+							"    const data = pm.response.json();\r",
+							"    data.forEach((book) => {\r",
+							"        pm.expect(book).to.have.property(\"id\");\r",
+							"        pm.expect(book).to.have.property(\"title\");\r",
+							"        pm.expect(book).to.have.property(\"description\");\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}{{booksPath}}",
+					"host": [
+						"{{baseUrl}}{{booksPath}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET – Book by ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response is a single book object\", function () {\r",
+							"    const book = pm.response.json();\r",
+							"    const envBookId = parseInt(pm.environment.get(\"bookId\"));\r",
+							"\r",
+							"    pm.expect(book).to.be.an(\"object\");\r",
+							"    pm.expect(book).to.have.property(\"id\");\r",
+							"    pm.expect(book).to.have.property(\"title\");\r",
+							"    pm.expect(book.id).to.eql(envBookId);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}{{booksPath}}/{{bookId}}",
+					"host": [
+						"{{baseUrl}}{{booksPath}}"
+					],
+					"path": [
+						"{{bookId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST – Create Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status is 200 or 201\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Store bookId (from response) into environment\", function () {\r",
+							"    const body = pm.response.json();\r",
+							"    console.log(\"Full response body:\", body);\r",
+							"\r",
+							"    pm.expect(body).to.be.an(\"object\");\r",
+							"    pm.expect(body).to.have.property(\"id\");\r",
+							"\r",
+							"    // Set environment variable bookId (will be 111 here)\r",
+							"    pm.environment.set(\"bookId\", body.id);\r",
+							"    console.log(\"bookId set to:\", pm.environment.get(\"bookId\"));\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 111,\r\n  \"title\": \"Postman Framework Practice Book\",\r\n  \"description\": \"Book created as part of BookStore API Testing project.\",\r\n  \"pageCount\": 250,\r\n  \"excerpt\": \"This is just a sample book for API testing.\",\r\n  \"publishDate\": \"2025-01-01T00:00:00.000Z\"\r\n}\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}{{booksPath}}",
+					"host": [
+						"{{baseUrl}}{{booksPath}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET – Created Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Fetched book has same id as bookId (env)\", function () {\r",
+							"    const book = pm.response.json();\r",
+							"    const envBookId = parseInt(pm.environment.get(\"bookId\"));\r",
+							"    pm.expect(book.id).to.eql(envBookId);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}{{booksPath}}/{{bookId}}",
+					"host": [
+						"{{baseUrl}}{{booksPath}}"
+					],
+					"path": [
+						"{{bookId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT – Update Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has updated fields\", function () {\r",
+							"    const book = pm.response.json();\r",
+							"    pm.expect(book.title).to.eql(\"Updated Postman Framework Book\");\r",
+							"    pm.expect(book.description).to.include(\"updated\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": {{bookId}},\r\n  \"title\": \"Updated Postman Framework Book\",\r\n  \"description\": \"This book has been updated as part of API testing.\",\r\n  \"pageCount\": 300,\r\n  \"excerpt\": \"Updated excerpt\",\r\n  \"publishDate\": \"2025-02-01T00:00:00.000Z\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}{{booksPath}}/{{bookId}}",
+					"host": [
+						"{{baseUrl}}{{booksPath}}"
+					],
+					"path": [
+						"{{bookId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE – Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Book deleted successfully\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}{{booksPath}}/{{bookId}}",
+					"host": [
+						"{{baseUrl}}{{booksPath}}"
+					],
+					"path": [
+						"{{bookId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET – Verify Book Deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// NOTE: FakeREST API limitation — GET still returns 200 after DELETE.\r",
+							"// In a real API, this should return 404 (Not Found).\r",
+							"// Test kept intentionally to demonstrate expected correct behavior.\r",
+							"\r",
+							"pm.test(\"Book is deleted\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([404, 400]);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}{{booksPath}}/{{bookId}}",
+					"host": [
+						"{{baseUrl}}{{booksPath}}"
+					],
+					"path": [
+						"{{bookId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "createdBookId",
+			"value": ""
+		}
+	]
+}
